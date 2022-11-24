@@ -28,6 +28,12 @@ export const api = createApi({
       }),
       providesTags: [{type: 'Device', id: 'List'}]
     }),
+    getSpecificDevice: builder.query<Device,string | undefined>({
+      query: (serialNumber) => ({
+        url: 'devices/' + serialNumber,
+        method: 'GET',
+      }),
+    }),
     addDevice: builder.mutation<Device, Device>({
       query: (device) => ({
         url: 'devices',
@@ -35,8 +41,22 @@ export const api = createApi({
         body: device
       }),
       invalidatesTags: [{type: 'Device', id: 'List'}]
+    }),
+    updateDevice: builder.mutation<Device, RequestPayload>({
+      query: ({params, payload}) => ({
+        url: 'devices/' + params?.serialNumber,
+        method: 'PUT',
+        body: payload
+      }),
+      invalidatesTags: [{type: 'Device', id: 'List'}]
     })
   }),
 })
 
-export const { useGetDeviceQuery, useLazyGetDeviceQuery, useAddDeviceMutation } = api
+export const { 
+  useGetDeviceQuery, 
+  useLazyGetDeviceQuery, 
+  useGetSpecificDeviceQuery, 
+  useLazyGetSpecificDeviceQuery, 
+  useAddDeviceMutation, 
+  useUpdateDeviceMutation } = api

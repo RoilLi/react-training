@@ -1,8 +1,8 @@
-import { Col, Popover, Layout, Row, Typography, Divider } from 'antd'
+import { Col, Layout, Popover, Row, Typography } from 'antd'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectSidebarCollapsed, toggleSideBar } from '../../reducer/appSlice'
-import { logout } from '../../reducer/authSlice'
+import { logout, selectCurrentUser } from '../../reducer/authSlice'
 import {
   AppTitle,
   MenuFoldOutIcon,
@@ -15,6 +15,7 @@ const { Title, Text } = Typography
 const Header = () => {
   const collapsed = useSelector(selectSidebarCollapsed)
   const dispatch = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
 
   return (
     <Layout.Header style={{ padding: 0 }}>
@@ -30,7 +31,11 @@ const Header = () => {
         </Col>
         <Col span={4} style={{ textAlign: 'right' }}>
           <Popover
-            title={<Title level={5}>Hi,</Title>}
+            title={
+              <Title level={5}>
+                Hi, {currentUser?.first_name + ' ' + currentUser?.last_name}
+              </Title>
+            }
             content={
               <a onClick={() => dispatch(logout())}>
                 <Text type="danger">Log Out</Text>

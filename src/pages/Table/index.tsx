@@ -8,11 +8,17 @@ import { Device, useGetDeviceQuery } from '../../services/deviceService'
 const { Title } = Typography
 
 const Table = () => {
+  const navigate = useNavigate()
   const columns: ProColumns<Device>[] = [
     {
       title: 'Device Name',
       dataIndex: 'name',
       search: false,
+      render: (data, row) => (
+        <a onClick={() => navigate(`/table/${row.serialNumber}/edit`)}>
+          {data}
+        </a>
+      ),
     },
     {
       title: 'Serial Number',
@@ -33,8 +39,6 @@ const Table = () => {
 
   const { data } = useGetDeviceQuery()
 
-  const navigate = useNavigate()
-
   return (
     <PageContent>
       <PageHeader
@@ -48,7 +52,7 @@ const Table = () => {
       <ConfigProvider locale={enUS}>
         <ProTable<Device>
           columns={columns}
-          rowKey="key"
+          rowKey="serialNumber"
           pagination={{
             pageSize: 10,
           }}

@@ -19,5 +19,3 @@ export const handlers = [
   }),
   ...db.device.toHandlers('rest'),
 ]
-
-console.log(...db.device.toHandlers('rest'))

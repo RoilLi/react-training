@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard'
 import Login from '../pages/Login'
 import Table from '../pages/Table'
 import AddPage from '../pages/Table/AddPage'
+import EditPage from '../pages/Table/EditPage'
 import { PrivateRouter } from './privateRouter'
 
 const routes = createBrowserRouter([
@@ -36,6 +37,14 @@ const routes = createBrowserRouter([
         element: (
           <PrivateRouter>
             <AddPage />
+          </PrivateRouter>
+        ),
+      },
+      {
+        path: 'table/:serialNumber/edit',
+        element: (
+          <PrivateRouter>
+            <EditPage />
           </PrivateRouter>
         ),
       },

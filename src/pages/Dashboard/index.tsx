@@ -1,7 +1,8 @@
 import { Line, Pie } from '@ant-design/plots'
 import { Card, Col, Layout, Row, Typography } from 'antd'
-import { StatisticCard } from '@ant-design/pro-components'
+import { StatisticCard, StatisticProps } from '@ant-design/pro-components'
 import { useEffect, useState } from 'react'
+import { useGetDeviceQuery } from '../../services/deviceService'
 
 const { Content } = Layout
 
@@ -9,28 +10,33 @@ const { Title } = Typography
 
 const Dashboard = () => {
   const [lineData, seLinetData] = useState([])
-  const [pieData, setPieData] = useState([
+  const [statisticData, setStatisticData] = useState([
     {
-      type: 'On',
-      value: 27,
+      type: 'on',
+      value: 0,
+      status: 'success',
     },
     {
-      type: 'Off',
-      value: 27,
+      type: 'off',
+      value: 0,
+      status: 'default',
     },
     {
-      type: 'Processing',
-      value: 27,
+      type: 'processing',
+      value: 0,
+      status: 'processing',
     },
     {
-      type: 'Error',
-      value: 27,
+      type: 'error',
+      value: 0,
+      status: 'error',
     },
   ])
+  const { data } = useGetDeviceQuery()
 
   const config = {
     appendPadding: 10,
-    data: pieData,
+    data: statisticData,
     angleField: 'value',
     colorField: 'type',
     radius: 0.9,
@@ -54,6 +60,53 @@ const Dashboard = () => {
   useEffect(() => {
     asyncFetch()
   }, [])
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      let onCount = 0
+      let offCount = 0
+      let processingCount = 0
+      let errorCount = 0
+      for (let item of data) {
+        switch (item.status) {
+          case 'on':
+            onCount++
+            break
+          case 'off':
+            offCount++
+            break
+          case 'processing':
+            processingCount++
+            break
+          case 'error':
+            errorCount++
+            break
+        }
+      }
+      setStatisticData([
+        {
+          type: 'on',
+          value: onCount,
+          status: 'success',
+        },
+        {
+          type: 'off',
+          value: offCount,
+          status: 'default',
+        },
+        {
+          type: 'processing',
+          value: processingCount,
+          status: 'processing',
+        },
+        {
+          type: 'error',
+          value: errorCount,
+          status: 'error',
+        },
+      ])
+    }
+  }, [data])
 
   const asyncFetch = () => {
     fetch(
@@ -79,38 +132,22 @@ const Dashboard = () => {
         <StatisticCard
           statistic={{
             title: 'All',
-            value: 0,
+            value: statisticData.reduce(
+              (partialSum, item) => partialSum + item.value,
+              0
+            ),
           }}
         />
         <StatisticCard.Divider />
-        <StatisticCard
-          statistic={{
-            title: 'On',
-            value: 0,
-            status: 'success',
-          }}
-        />
-        <StatisticCard
-          statistic={{
-            title: 'Off',
-            value: 0,
-            status: 'default',
-          }}
-        />
-        <StatisticCard
-          statistic={{
-            title: 'Processing',
-            value: 0,
-            status: 'processing',
-          }}
-        />
-        <StatisticCard
-          statistic={{
-            title: 'Error',
-            value: 0,
-            status: 'error',
-          }}
-        />
+        {statisticData.map((item) => (
+          <StatisticCard
+            statistic={{
+              title: item.type,
+              value: item.value,
+              status: item.status as StatisticProps['status'],
+            }}
+          />
+        ))}
       </StatisticCard.Group>
       <Row style={{ marginTop: '24px' }} gutter={32}>
         <Col span={15}>
