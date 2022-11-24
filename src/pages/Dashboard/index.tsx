@@ -1,40 +1,92 @@
 import { Line, Pie } from '@ant-design/plots'
-import { Card, Col, Layout, Row, Typography } from 'antd'
 import { StatisticCard, StatisticProps } from '@ant-design/pro-components'
+import { Card, Col, Layout, Row, Typography } from 'antd'
 import { useEffect, useState } from 'react'
+import { Device } from '../../services/deviceService'
 
 const { Content } = Layout
 
 const { Title } = Typography
 
+const defaulStatistic = [
+  {
+    type: 'on',
+    value: 0,
+    status: 'success',
+  },
+  {
+    type: 'off',
+    value: 0,
+    status: 'default',
+  },
+  {
+    type: 'processing',
+    value: 0,
+    status: 'processing',
+  },
+  {
+    type: 'error',
+    value: 0,
+    status: 'error',
+  },
+]
+
+const transFormData = (data: Device[] | undefined) => {
+  if (data && data.length > 0) {
+    let onCount = 0
+    let offCount = 0
+    let processingCount = 0
+    let errorCount = 0
+    for (let item of data) {
+      switch (item.status) {
+        case 'on':
+          onCount++
+          break
+        case 'off':
+          offCount++
+          break
+        case 'processing':
+          processingCount++
+          break
+        case 'error':
+          errorCount++
+          break
+      }
+    }
+    return [
+      {
+        type: 'on',
+        value: onCount,
+        status: 'success',
+      },
+      {
+        type: 'off',
+        value: offCount,
+        status: 'default',
+      },
+      {
+        type: 'processing',
+        value: processingCount,
+        status: 'processing',
+      },
+      {
+        type: 'error',
+        value: errorCount,
+        status: 'error',
+      },
+    ]
+  } else {
+    console.log(data)
+    return defaulStatistic
+  }
+}
+
 const Dashboard = () => {
   const [lineData, seLinetData] = useState([])
-  const [statisticData, setStatisticData] = useState([
-    {
-      type: 'on',
-      value: 0,
-      status: 'success',
-    },
-    {
-      type: 'off',
-      value: 0,
-      status: 'default',
-    },
-    {
-      type: 'processing',
-      value: 0,
-      status: 'processing',
-    },
-    {
-      type: 'error',
-      value: 0,
-      status: 'error',
-    },
-  ])
 
   const config = {
     appendPadding: 10,
-    data: statisticData,
+    data: defaulStatistic,
     angleField: 'value',
     colorField: 'type',
     radius: 0.9,
@@ -83,14 +135,14 @@ const Dashboard = () => {
         <StatisticCard
           statistic={{
             title: 'All',
-            value: statisticData.reduce(
+            value: defaulStatistic.reduce(
               (partialSum, item) => partialSum + item.value,
               0
             ),
           }}
         />
         <StatisticCard.Divider />
-        {statisticData.map((item) => (
+        {defaulStatistic.map((item) => (
           <StatisticCard
             statistic={{
               title: item.type,
