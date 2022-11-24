@@ -2,7 +2,6 @@ import { Line, Pie } from '@ant-design/plots'
 import { Card, Col, Layout, Row, Typography } from 'antd'
 import { StatisticCard, StatisticProps } from '@ant-design/pro-components'
 import { useEffect, useState } from 'react'
-import { useGetDeviceQuery } from '../../services/deviceService'
 
 const { Content } = Layout
 
@@ -32,7 +31,6 @@ const Dashboard = () => {
       status: 'error',
     },
   ])
-  const { data } = useGetDeviceQuery()
 
   const config = {
     appendPadding: 10,
@@ -60,53 +58,6 @@ const Dashboard = () => {
   useEffect(() => {
     asyncFetch()
   }, [])
-
-  useEffect(() => {
-    if (data && data.length > 0) {
-      let onCount = 0
-      let offCount = 0
-      let processingCount = 0
-      let errorCount = 0
-      for (let item of data) {
-        switch (item.status) {
-          case 'on':
-            onCount++
-            break
-          case 'off':
-            offCount++
-            break
-          case 'processing':
-            processingCount++
-            break
-          case 'error':
-            errorCount++
-            break
-        }
-      }
-      setStatisticData([
-        {
-          type: 'on',
-          value: onCount,
-          status: 'success',
-        },
-        {
-          type: 'off',
-          value: offCount,
-          status: 'default',
-        },
-        {
-          type: 'processing',
-          value: processingCount,
-          status: 'processing',
-        },
-        {
-          type: 'error',
-          value: errorCount,
-          status: 'error',
-        },
-      ])
-    }
-  }, [data])
 
   const asyncFetch = () => {
     fetch(
